@@ -4,6 +4,7 @@
 #include "purlong.h"
 using std::cout;
 using std::endl;
+using std::string;
 
 PurLong::PurLong(std::string number)
 {
@@ -17,27 +18,40 @@ PurLong::PurLong(std::string number)
    digits.reserve(digitsInNumber);
    //cout << "initial string:" << number <<endl;
    // Переворачиваем строку, чтобы было удобно записывать разряды в массив
-   std::reverse(number.begin(), number.end());
+   //std::reverse(number.begin(), number.end());
+  
+  
    /*
     Чтобы перевести число из 10-ой СС и 10^9 СС, то нужно брать по 9 цифр справа налево.
     Эти 9 цифр будут вместе представлять цифру числа в 10^9 СС
    */
    for(int i{0}; i < digitsInNumber; i++)
    {
-       std::string resultStrDigit = number.substr(9*i, ZEROS_IN_BASE);
-       // Переворачиваем эту строку, т.к. изначальная строка тоже была перевёрнута
-       std::reverse(resultStrDigit.begin(), resultStrDigit.end());
-       digit newDigit = static_cast<digit>(stoi(resultStrDigit));
-       digits.push_back(newDigit);
+       // Берём 9 цифр с конца и делаем из них цифру нового числа
+       string newDigit{""};
+       for(int j{0}; j < ZEROS_IN_BASE; j++)
+       {
+           int oldDigitIndex = (number.size()-1-9*i)-j;
+           // Проверяем, не вышел ли индекс за рамки числа
+           if(oldDigitIndex < 0)
+           {
+               break;
+           }
+           newDigit = number[oldDigitIndex] + newDigit;
+       }
+       //cout << "i: " << i<<" digit: "<<newDigit << endl;
+       // Добавляем полученную цифру в наше число
+       digits.push_back(static_cast<digit>(stoi(newDigit)));
    }
 
-
-   
-   
-   /*
-   Для удобства выполнения арифметических операций с длинным числом, храним его
-   в обратном порядке
-   */
+//    for(int i{0}; i < digitsInNumber; i++)
+//    {
+//        std::string resultStrDigit = number.substr(9*i, ZEROS_IN_BASE);
+//        // Переворачиваем эту строку, т.к. изначальная строка тоже была перевёрнута
+//        std::reverse(resultStrDigit.begin(), resultStrDigit.end());
+//        digit newDigit = static_cast<digit>(stoi(resultStrDigit));
+//        digits.push_back(newDigit);
+//    }
 
 //    cout << "got: ";
 //    for(digit d: digits)
@@ -83,6 +97,18 @@ void PurLong::processSign(std::string &number)
     }
 }
 
+void PurLong::deleteLeadingZeros()
+{
+    /*
+    Учитываем, что все цифры числа могут оказаться нулевыми. Это может произойти, например, после
+    вычитания одинаковых чисел друг из друга. В результате должен остаться единственный ноль
+    */
+    while(digits.back()==0 && digits.size() > 1)
+    {
+        digits.pop_back();
+    }
+}
+
 std::ostream& operator<<(std::ostream &out, const PurLong &number)
 {
     if(number.negative)
@@ -96,6 +122,23 @@ std::ostream& operator<<(std::ostream &out, const PurLong &number)
     return out;
 }
 
+
+PurLong operator -(const PurLong &rValue)
+{
+    PurLong result{rValue};
+    // Ноль не имеет знака
+    if(rValue == PurLong(0))
+    {
+        return rValue;
+    }
+    result.negative = !result.negative;
+    return result;
+}
+
+PurLong operator +(const PurLong &rValue)
+{
+    return rValue;
+}
 
 PurLong operator +(const PurLong &lValue, const PurLong &rValue)
 {
@@ -116,9 +159,6 @@ PurLong operator +(const PurLong &lValue, const PurLong &rValue)
         // Предоставляем в результате еще один разряд
         sumResult.digits.push_back(0);
         //cout << "sumResult: " << sumResult<<endl;
-
-        
-        
         //cout <<"sumResult size: "<<sumResult.digits.size()<<endl;
         // Складываем числа поразрядно    
         for(int i{0}; i < min.digits.size(); i++)
@@ -132,32 +172,73 @@ PurLong operator +(const PurLong &lValue, const PurLong &rValue)
             //cout << endl;
         }
         //Удаляем ненужные ведущие нулевые разряды
-        while(sumResult.digits.back() == 0)
-        {
-            //cout << "deleting of trailing zeros"<<endl;
-            sumResult.digits.pop_back();
-        }
+        sumResult.deleteLeadingZeros();
+        // while(sumResult.digits.back() == 0)
+        // {
+        //     //cout << "deleting of trailing zeros"<<endl;
+        //     sumResult.digits.pop_back();
+        // }
         //cout << "RESULT: "<<min << " + "<<max << " = "<<sumResult<<endl;
         return sumResult;    
     }
 
 }
 
-PurLong operator -(const PurLong &rValue)
+PurLong operator -(const PurLong &lValue, const PurLong &rValue)
 {
-    PurLong result{rValue};
-    // Ноль не имеет знака
-    if(rValue == PurLong(0))
+    // Если оба числа положительны, производим поразрядное вычитание
+    if(!lValue.negative && !rValue.negative)
     {
-        return rValue;
+        bool resultIsNegative;
+        PurLong min, max;
+        // Копируем наибольшее число в результат
+        //TODO нужно точно знать, какое число больше!!!
+        if(lValue.digits.size() >= rValue.digits.size())
+        {
+            max = lValue;
+            min = rValue;
+            // Уменьшаемое больше вычитаемого, результат положительный
+            resultIsNegative = false;
+        }
+        else
+        {
+            max = rValue;
+            min = lValue;
+            // Уменьшаемое меньше вычитаемого, результат отрицательный
+            resultIsNegative = true;
+        }
+        // Копируем максимальное число в результат
+        PurLong differenceResult{max};
+        // Поразрядно вычитаем из большего числа меньшее
+        for(int i{0}; i < min.digits.size(); i++)
+        {
+            int difference = differenceResult.digits[i]-min.digits[i];
+            if(difference < 0)
+            {
+                // Занимаем единицу из ближайшего ненулевого старшего разряда
+                int j = i+1;
+                // Ищем такой разряд. Он обязательно должен быть, т.к. это число больше вычитаемого
+                while(differenceResult.digits[j]==0)
+                {
+                    // В каждый нулевой разряд, который мы прошли, должно перенестись значение BASE-1
+                    differenceResult.digits[j]=BASE-1;
+                    j++;
+                }
+                differenceResult.digits[j]--;
+                difference += BASE;
+            }
+            // Запоминаем результат вычитания значений в текущем разрядеы
+            differenceResult.digits[i] = difference;
+        }
+        // Удаляем из результата незначащие нули
+        differenceResult.deleteLeadingZeros();
+        // Учитываем знак результата
+        if(resultIsNegative)
+        {
+            return -differenceResult;
+        }
+        return differenceResult;
     }
-    result.negative = !result.negative;
-    return result;
-}
-
-PurLong operator +(const PurLong &rValue)
-{
-    return rValue;
 }
 
 bool operator==(const PurLong &lValue, const PurLong &rValue)
@@ -188,8 +269,15 @@ bool operator!=(const PurLong &lValue, const PurLong &rValue)
     return !(lValue == rValue);
 }
 
+
+
 // bool operator >(const PurLong &lValue, const PurLong &rValue)
 // {
+//     /*
+//     Мы считаем левое число больше правого, если выполняется хотя бы одно из следующих условий:
+//     1. Левое число положительное, правое - отрицательное
+//     2. Оба числа положительные и 
+//     */
 // }
 
 // bool operator >=(const PurLong &lValue, const PurLong &rValue)

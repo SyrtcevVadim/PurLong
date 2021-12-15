@@ -33,15 +33,18 @@ public:
 
     friend std::ostream& operator<<(std::ostream &out, const PurLong &number);
 
-    friend PurLong operator +(const PurLong &lValue, const PurLong &rValue);
+    
     // Меняет знак числа
     friend PurLong operator -(const PurLong &rValue);
     // Возвращает число в неизменном виде
     friend PurLong operator +(const PurLong &rValue);
 
+    friend PurLong operator +(const PurLong &lValue, const PurLong &rValue);
+    friend PurLong operator -(const PurLong &lValue, const PurLong &rValue);
+
     friend bool operator ==(const PurLong &lValue, const PurLong &rValue);
     friend bool operator !=(const PurLong &lValue, const PurLong &rValue);
-    // friend bool operator >(const PurLong &lValue, const PurLong &rValue);
+    //friend bool operator >(const PurLong &lValue, const PurLong &rValue);
     // friend bool operator >=(const PurLong &lValue, const PurLong &rValue);
     // friend bool operator <(const PurLong &lValue, const PurLong &rValue);
     // friend bool operator <=(const PurLong &lValue, const PurLong &rValue);
@@ -54,4 +57,6 @@ private:
     /// Выясняет, есть ли у числа знак. Если у числа есть знак, он извлекается
     /// из строки и устанавливается соответственный флаг знака числа
     void processSign(std::string &number);
+    /// Удаляют из числа ведущие(незначащие нули)
+    void deleteLeadingZeros();
 };

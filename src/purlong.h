@@ -30,9 +30,14 @@ public:
     /// Возвращает строкове представление неограниченно длинного числа
     std::string getStringRepr();
 
+
     friend std::ostream& operator<<(std::ostream &out, const PurLong &number);
 
     friend PurLong operator +(const PurLong &lValue, const PurLong &rValue);
+    // Меняет знак числа
+    friend PurLong operator -(const PurLong &rValue);
+    // Возвращает число в неизменном виде
+    friend PurLong operator +(const PurLong &rValue);
 
     friend bool operator ==(const PurLong &lValue, const PurLong &rValue);
     friend bool operator !=(const PurLong &lValue, const PurLong &rValue);

@@ -97,7 +97,6 @@ std::ostream& operator<<(std::ostream &out, const PurLong &number)
 }
 
 
-
 PurLong operator +(const PurLong &lValue, const PurLong &rValue)
 {
     // Если оба числа положительны, складываем их
@@ -142,6 +141,23 @@ PurLong operator +(const PurLong &lValue, const PurLong &rValue)
         return sumResult;    
     }
 
+}
+
+PurLong operator -(const PurLong &rValue)
+{
+    PurLong result{rValue};
+    // Ноль не имеет знака
+    if(rValue == PurLong(0))
+    {
+        return rValue;
+    }
+    result.negative = !result.negative;
+    return result;
+}
+
+PurLong operator +(const PurLong &rValue)
+{
+    return rValue;
 }
 
 bool operator==(const PurLong &lValue, const PurLong &rValue)

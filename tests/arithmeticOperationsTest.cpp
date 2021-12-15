@@ -4,7 +4,34 @@
 #include <string>
 using namespace std;
 
-TEST_CASE("+")
+TEST_CASE("unary +")
+{
+    auto number = GENERATE("0", "-123","1234327980432097809423172143");
+    CHECK(+PurLong(number) == PurLong(number));
+}
+
+TEST_CASE("unary -")
+{
+    vector<string> initial{
+        "0",
+        "1",
+        "-1",
+        "430298103492187432987439874923084023949324719328947238904348749172473014789047928347"
+    };
+    vector<string> answer{
+        "0",
+        "-1",
+        "1",
+        "-430298103492187432987439874923084023949324719328947238904348749172473014789047928347"
+    };
+
+    for(int i{0}; i < initial.size(); i++)
+    {
+        CHECK(-PurLong(initial[i]) == PurLong(answer[i]));
+    }
+}
+
+TEST_CASE("binary +")
 {
     vector<string> firstNumber
     {"1",

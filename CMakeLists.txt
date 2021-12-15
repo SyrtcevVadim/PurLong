@@ -7,5 +7,5 @@ set(CMAKE_CXX_STANDART 17)
 set(CMAKE_CXX_STANDART_REQUIRED True)
 
 add_executable(autoTests src/purlong.cpp 
-tests/mainTest.cpp tests/comparisionsTest.cpp tests/sumTest.cpp
+tests/mainTest.cpp tests/comparisionsTest.cpp tests/arithmeticOperationsTest.cpp
 tests/representationTest.cpp)

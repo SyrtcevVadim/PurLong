@@ -145,3 +145,23 @@ TEST_CASE("binary -")
     }
     #endif
 }
+
+TEST_CASE("increment")
+{
+    vector<string> initial{"0", "1", "999999999"};
+    vector<string> result{"1", "2", "1000000000"};
+    SECTION("prefix increment")
+    {
+        for(int i{0}; i < initial.size(); i++)
+        {
+            CHECK((++PurLong(initial[i]))==PurLong(result[i]));
+        }
+    }
+    SECTION("postfix increment")
+    {
+        for(int i{0}; i < initial.size(); i++)
+        {
+            CHECK((PurLong(initial[i])++)==PurLong(result[i]));
+        }
+    }
+}

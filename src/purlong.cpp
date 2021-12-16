@@ -269,7 +269,15 @@ bool operator!=(const PurLong &lValue, const PurLong &rValue)
     return !(lValue == rValue);
 }
 
+PurLong PurLong::operator++()
+{
+    return (*this+PurLong(1));
+}
 
+PurLong PurLong::operator++(int)
+{
+    return ++(*this);
+}
 
 // bool operator >(const PurLong &lValue, const PurLong &rValue)
 // {

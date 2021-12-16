@@ -33,7 +33,10 @@ public:
 
     friend std::ostream& operator<<(std::ostream &out, const PurLong &number);
 
-    
+    // Увеличивает значение числа на 1
+    PurLong operator++();
+    PurLong operator++(int);
+
     // Меняет знак числа
     friend PurLong operator -(const PurLong &rValue);
     // Возвращает число в неизменном виде

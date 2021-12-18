@@ -321,7 +321,9 @@ PurLong PurLong::operator++()
 
 PurLong PurLong::operator++(int)
 {
-    return ++(*this);
+    PurLong oldValue(*this);
+    ++(*this);
+    return oldValue;
 }
 
 bool operator >(const PurLong &lValue, const PurLong &rValue)

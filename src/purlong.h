@@ -47,10 +47,10 @@ public:
 
     friend bool operator ==(const PurLong &lValue, const PurLong &rValue);
     friend bool operator !=(const PurLong &lValue, const PurLong &rValue);
-    //friend bool operator >(const PurLong &lValue, const PurLong &rValue);
-    // friend bool operator >=(const PurLong &lValue, const PurLong &rValue);
-    // friend bool operator <(const PurLong &lValue, const PurLong &rValue);
-    // friend bool operator <=(const PurLong &lValue, const PurLong &rValue);
+    friend bool operator >(const PurLong &lValue, const PurLong &rValue);
+    friend bool operator <(const PurLong &lValue, const PurLong &rValue);
+    friend bool operator >=(const PurLong &lValue, const PurLong &rValue);
+    friend bool operator <=(const PurLong &lValue, const PurLong &rValue);
 private:
     /// Показывает, является ли число отрицательным
     bool negative;

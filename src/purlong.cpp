@@ -83,6 +83,11 @@ void PurLong::processSign(std::string &number)
 {
     // Изначально мы предполагаем, что на вход подано положительно число
     negative = false;
+    // Число 0 - особое и не имеет знака
+    if(number == "0")
+    {
+        return;
+    }
     // Проверяем, есть ли у поданного числа знак
     if(number[0] == '-')
     {
@@ -279,26 +284,54 @@ PurLong PurLong::operator++(int)
     return ++(*this);
 }
 
-// bool operator >(const PurLong &lValue, const PurLong &rValue)
-// {
-//     /*
-//     Мы считаем левое число больше правого, если выполняется хотя бы одно из следующих условий:
-//     1. Левое число положительное, правое - отрицательное
-//     2. Оба числа положительные и 
-//     */
-// }
+bool operator >(const PurLong &lValue, const PurLong &rValue)
+{
+    /*
+    Мы считаем левое число больше правого, если выполняется хотя бы одно из следующих условий:
+    1. Левое число положительное, правое - отрицательное
+    2. Оба числа положительные и в левом числе больше разрядов, чем в правом
+    3. Оба числа положительные, в обоих числах одинаковое число разрядов и
+    старший разряд левого числа больше старшего разряда правого числа
+    4. Оба числа отрицательные, тогда большее из них то, которое меньше по абсолютному значению
+    */
+    if(!lValue.negative && rValue.negative)
+    {
+        return true;
+    }
+    if(!lValue.negative && !rValue.negative)
+    {
+        if(lValue.digits.size() > rValue.digits.size())
+        {
+            return true;
+        }
+        else if(lValue.digits.size()==rValue.digits.size())
+        {
+            int lastDigitIndex = lValue.digits.size()-1;
+            return (lValue.digits[lastDigitIndex] > rValue.digits[lastDigitIndex]);
+        } 
+    }
+    if(lValue.negative && rValue.negative)
+    {
+        /*
+        Вместо реализации функции взятия абсолютного значения добавляем к числам '-;, делая их положительными
+        */
+        return (PurLong(-rValue)>PurLong(-lValue));
+    }
+    // В противном случае, правое число больше
+    return false;
+}
 
-// bool operator >=(const PurLong &lValue, const PurLong &rValue)
-// {
+bool operator >=(const PurLong &lValue, const PurLong &rValue)
+{
+    return (lValue == rValue || lValue > rValue);
+}
 
-// }
+bool operator <(const PurLong &lValue, const PurLong &rValue)
+{
+    return (rValue > lValue);
+}
 
-// bool operator <(const PurLong &lValue, const PurLong &rValue)
-// {
-
-// }
-
-// bool operator <=(const PurLong &lValue, const PurLong &rValue)
-// {
-
-// }
+bool operator <=(const PurLong &lValue, const PurLong &rValue)
+{
+    return (lValue == rValue || lValue < rValue);
+}

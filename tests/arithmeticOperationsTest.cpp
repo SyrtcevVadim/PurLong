@@ -205,14 +205,18 @@ TEST_CASE("increment")
     {
         for(int i{0}; i < initial.size(); i++)
         {
-            CHECK((++PurLong(initial[i]))==PurLong(result[i]));
+            PurLong a{initial[i]};
+            ++a;
+            CHECK(a==PurLong(result[i]));
         }
     }
     SECTION("postfix increment")
     {
         for(int i{0}; i < initial.size(); i++)
         {
-            CHECK((PurLong(initial[i])++)==PurLong(result[i]));
+            PurLong a{initial[i]};
+            a++;
+            CHECK(a==PurLong(result[i]));
         }
     }
 }

@@ -315,7 +315,8 @@ bool operator!=(const PurLong &lValue, const PurLong &rValue)
 
 PurLong PurLong::operator++()
 {
-    return (*this+PurLong(1));
+    *this = *this + 1;
+    return *this;
 }
 
 PurLong PurLong::operator++(int)

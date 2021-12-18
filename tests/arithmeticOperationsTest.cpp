@@ -64,6 +64,39 @@ TEST_CASE("binary +")
             CHECK(PurLong(lValue[i])+PurLong(rValue[i])==PurLong(resultSum[i]));
         }
     }
+    SECTION("negative numbers")
+    {
+        vector<string> lValue
+        {
+            "-123",
+            "-123456789123456789123456789123456789123456789123456789123456789123456789"
+        };
+        vector<string> rValue
+        {
+            "-123",
+            "-43284343289742369349746392864327979797979797979798439243247236843843434326436494637642826483"
+        };
+        vector<string> resultSum
+        {
+            "-246",
+            "-43284343289742369349869849653451436587103254768921896032370693632966891115559951426766283272"
+        };
+        for(int i{0}; i < lValue.size(); i++)
+        {
+            CHECK(PurLong(lValue[i])+PurLong(rValue[i])==PurLong(resultSum[i]));
+        }
+    }
+    SECTION("lValue < 0 &&  rValue > 0")
+    {
+        CHECK(PurLong("-123456789") + PurLong("123456789") == PurLong("0"));
+        CHECK(PurLong("-123456789123456789") + PurLong("1000000") == PurLong("-123456789122456789"));
+        CHECK(PurLong("-5") + PurLong("1") == PurLong("-4"));
+    }
+    SECTION("lValue > 0 && rValue < 0")
+    {
+        CHECK(PurLong("123") + PurLong("-123") == PurLong(0));
+        CHECK(PurLong("1000000") + PurLong("-1000") == PurLong(999000));
+    }
     #ifdef PURLONG_ENABLE_BENCHMARKS
     SECTION("benchmarks")
     {
@@ -83,7 +116,7 @@ TEST_CASE("binary +")
 
 TEST_CASE("binary -")
 {
-    SECTION("positive numbers")
+    SECTION("lValue > 0 && rValue > 0")
     {
         vector<string> lValue{
             "1",
@@ -114,6 +147,24 @@ TEST_CASE("binary -")
             INFO(i);
             CHECK(PurLong(lValue[i])-PurLong(rValue[i]) == PurLong(resultDifference[i]));
         }
+    }
+    SECTION("lValue < rValue")
+    {
+        CHECK(PurLong(123)-PurLong(1'000'000) == PurLong(-999877));
+        CHECK(PurLong(0)-PurLong(123'456'789) == PurLong(-123'456'789));
+        CHECK(PurLong(1'000'000)-PurLong(1'000'000'000'000) == PurLong(-999999000000));
+    }
+    SECTION("lValue < 0 && rValue < 0")
+    {
+        CHECK(PurLong("-123456789123456789")-PurLong("-999999999999999999") == PurLong("876543210876543210"));
+    }
+    SECTION("lValue < 0 && rValue > 0")
+    {
+        CHECK(PurLong("-123456789123456789")-PurLong("999999999999999999") == PurLong("-1123456789123456788"));
+    }
+    SECTION("lValue > 0 && rValue < 0")
+    {
+        CHECK(PurLong("876543210876543210")-PurLong("-123456789123456789") == PurLong("999999999999999999"));
     }
     #ifdef PURLONG_ENABLE_BENCHMARKS
     SECTION("benchmarks")

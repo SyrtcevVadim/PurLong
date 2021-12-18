@@ -114,6 +114,15 @@ void PurLong::deleteLeadingZeros()
     }
 }
 
+PurLong PurLong::getAbs()const
+{
+    if(negative)
+    {
+        return -(*this);
+    }
+    return *this;
+}
+
 std::ostream& operator<<(std::ostream &out, const PurLong &number)
 {
     if(number.negative)
@@ -186,7 +195,22 @@ PurLong operator +(const PurLong &lValue, const PurLong &rValue)
         //cout << "RESULT: "<<min << " + "<<max << " = "<<sumResult<<endl;
         return sumResult;    
     }
-
+    // Пусть, a > 0 && b > 0
+    // (-a)+(-b) = -(a+b)
+    else if(lValue.negative && rValue.negative)
+    {
+        return -(lValue.getAbs()+rValue.getAbs());
+    }
+    // (-a)+b = b-a
+    else if(lValue.negative && !rValue.negative)
+    {
+        return (rValue - lValue.getAbs());
+    }
+    // a+(-b) = a-b
+    else if(!lValue.negative && rValue.negative)
+    {
+        return (lValue - rValue.getAbs());
+    }
 }
 
 PurLong operator -(const PurLong &lValue, const PurLong &rValue)
@@ -197,8 +221,7 @@ PurLong operator -(const PurLong &lValue, const PurLong &rValue)
         bool resultIsNegative;
         PurLong min, max;
         // Копируем наибольшее число в результат
-        //TODO нужно точно знать, какое число больше!!!
-        if(lValue.digits.size() >= rValue.digits.size())
+        if(lValue >= rValue)
         {
             max = lValue;
             min = rValue;
@@ -243,6 +266,22 @@ PurLong operator -(const PurLong &lValue, const PurLong &rValue)
             return -differenceResult;
         }
         return differenceResult;
+    }
+    // Пусть, a > 0 && b > 0
+    // (-a)-(-b) = -a+b = b-a
+    else if(lValue.negative && rValue.negative)
+    {
+        return rValue.getAbs() - lValue.getAbs();
+    }
+    // a-(-b) = a+b
+    else if(!lValue.negative && rValue.negative)
+    {
+        return lValue.getAbs() + rValue.getAbs();
+    }
+    // (-a)-b = -(a+b)
+    else if(lValue.negative && !rValue.negative)
+    {
+        return -(lValue.getAbs() + rValue.getAbs());
     }
 }
 
